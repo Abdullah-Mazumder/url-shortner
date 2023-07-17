@@ -1,4 +1,5 @@
-import { Container, useTheme } from "@mui/material";
+import { useEffect } from "react";
+import { useTheme } from "@mui/material";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 
@@ -7,17 +8,23 @@ const Link = () => {
   const theme = useTheme();
   const urlList = useSelector((state) => state.urlList);
 
-  if (urlList[id]) {
-    window.location.href = urlList[id];
-    return;
-  }
+  useEffect(() => {
+    if (urlList[id]) {
+      document.body.style.display = "none";
+      window.location.href = urlList[id];
+    }
+  }, [id, urlList]);
 
   return (
-    <Container>
-      <h3 style={{ textAlign: "center", color: theme.palette.secondary[500] }}>
-        Your Link is invalid
-      </h3>
-    </Container>
+    <div>
+      {!urlList[id] && (
+        <h3
+          style={{ textAlign: "center", color: theme.palette.secondary[500] }}
+        >
+          Your Link is invalid
+        </h3>
+      )}
+    </div>
   );
 };
 
