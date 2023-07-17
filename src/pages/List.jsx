@@ -4,6 +4,7 @@ import {
   IconButton,
   TextField,
   useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import EastIcon from "@mui/icons-material/East";
@@ -17,6 +18,7 @@ import { deleteUrl } from "../redux/features/urlListSlice";
 import { useNavigate } from "react-router-dom";
 
 const List = () => {
+  const theme = useTheme();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const largeScreenMatches = useMediaQuery("(min-width:1244px)");
@@ -57,73 +59,88 @@ const List = () => {
             gap: 2,
           }}
         >
-          {Object.keys(urlList).map((id) => (
-            <Box
-              key={shortid.generate()}
-              sx={{ display: "flex", gap: !smallScreenMatches ? 1 : 3 }}
+          {Object.keys(urlList).length > 0 ? (
+            <>
+              {Object.keys(urlList).map((id) => (
+                <Box
+                  key={shortid.generate()}
+                  sx={{ display: "flex", gap: !smallScreenMatches ? 1 : 3 }}
+                >
+                  <Box sx={{ display: "flex", gap: 0.5 }}>
+                    <TextField
+                      fullWidth
+                      color="secondary"
+                      size="small"
+                      disabled
+                      value={urlList[id]}
+                    />
+                    <IconButton
+                      aria-label="copy"
+                      color="secondary"
+                      onClick={() => copyToClipboard(urlList[id])}
+                    >
+                      <ContentCopyIcon />
+                    </IconButton>
+                    <IconButton
+                      aria-label="edit"
+                      color="secondary"
+                      onClick={() => edit(id)}
+                    >
+                      <EditIcon />
+                    </IconButton>
+                  </Box>
+                  <Box>
+                    <IconButton aria-label="copy" color="secondary" disabled>
+                      <EastIcon />
+                    </IconButton>
+                  </Box>
+                  <Box sx={{ display: "flex", gap: 0.5, alignItems: "center" }}>
+                    <TextField
+                      fullWidth
+                      color="secondary"
+                      size="small"
+                      disabled
+                      value={window.location.origin + "/" + id}
+                    />
+                    <IconButton
+                      aria-label="copy"
+                      color="secondary"
+                      onClick={() =>
+                        copyToClipboard(window.location.origin + "/" + id)
+                      }
+                    >
+                      <ContentCopyIcon />
+                    </IconButton>
+                    <IconButton
+                      aria-label="delete"
+                      color="secondary"
+                      onClick={() =>
+                        openlink(window.location.origin + "/" + id)
+                      }
+                    >
+                      <OpenInNewIcon />
+                    </IconButton>
+                    <IconButton
+                      aria-label="delete"
+                      color="secondary"
+                      onClick={() => remove(id)}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </Box>
+                </Box>
+              ))}
+            </>
+          ) : (
+            <h3
+              style={{
+                textAlign: "center",
+                color: theme.palette.secondary[500],
+              }}
             >
-              <Box sx={{ display: "flex", gap: 0.5 }}>
-                <TextField
-                  fullWidth
-                  color="secondary"
-                  size="small"
-                  disabled
-                  value={urlList[id]}
-                />
-                <IconButton
-                  aria-label="copy"
-                  color="secondary"
-                  onClick={() => copyToClipboard(urlList[id])}
-                >
-                  <ContentCopyIcon />
-                </IconButton>
-                <IconButton
-                  aria-label="edit"
-                  color="secondary"
-                  onClick={() => edit(id)}
-                >
-                  <EditIcon />
-                </IconButton>
-              </Box>
-              <Box>
-                <IconButton aria-label="copy" color="secondary" disabled>
-                  <EastIcon />
-                </IconButton>
-              </Box>
-              <Box sx={{ display: "flex", gap: 0.5, alignItems: "center" }}>
-                <TextField
-                  fullWidth
-                  color="secondary"
-                  size="small"
-                  disabled
-                  value={window.location.origin + "/" + id}
-                />
-                <IconButton
-                  aria-label="copy"
-                  color="secondary"
-                  onClick={() =>
-                    copyToClipboard(window.location.origin + "/" + id)
-                  }
-                >
-                  <ContentCopyIcon />
-                </IconButton>
-                <IconButton
-                  aria-label="delete"
-                  color="secondary"
-                  onClick={() => openlink(window.location.origin + "/" + id)}
-                >
-                  <OpenInNewIcon />
-                </IconButton>
-                <IconButton
-                  aria-label="delete"
-                  color="secondary"
-                  onClick={() => remove(id)}
-                >
-                  <DeleteIcon />
-                </IconButton>
-              </Box>
-            </Box>
-          ))}
+              Your List is Empty!!
+            </h3>
+          )}
         </Box>
       </Box>
     </Container>

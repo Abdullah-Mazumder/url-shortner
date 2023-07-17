@@ -1,31 +1,38 @@
 import { createSlice } from "@reduxjs/toolkit";
+import produce from "immer";
 
-let initialState = {};
-
-const urlList = localStorage.getItem("urlList");
-
-if (urlList) {
-  initialState = JSON.parse(urlList);
-}
+const initialState = JSON.parse(localStorage.getItem("urlList")) || {};
 
 const urlListSlice = createSlice({
   name: "urlList",
   initialState,
   reducers: {
     addUrl: (state, action) => {
-      state[action.payload.id] = action.payload.url;
-      localStorage.setItem("urlList", JSON.stringify(state));
+      const { id, url } = action.payload;
+      state[id] = url;
     },
     deleteUrl: (state, action) => {
-      delete state[action.payload.id];
-      localStorage.setItem("urlList", JSON.stringify(state));
+      const { id } = action.payload;
+      delete state[id];
     },
     editUrl: (state, action) => {
-      state[action.payload.id] = action.payload.url;
-      localStorage.setItem("urlList", JSON.stringify(state));
+      const { id, url } = action.payload;
+      state[id] = url;
     },
   },
 });
 
-export default urlListSlice.reducer;
 export const { addUrl, deleteUrl, editUrl } = urlListSlice.actions;
+
+// Save state to localStorage after each action
+const saveStateToLocalStorage = (state) => {
+  localStorage.setItem("urlList", JSON.stringify(state));
+};
+
+const urlListReducer = (state = initialState, action) =>
+  produce(state, (draftState) => {
+    urlListSlice.reducer(draftState, action);
+    saveStateToLocalStorage(draftState);
+  });
+
+export default urlListReducer;
